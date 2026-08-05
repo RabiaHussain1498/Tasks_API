@@ -2,15 +2,19 @@ from dependencies import get_current_user
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import Base, engine, SessionLocal
-from models import Note
+from models import Note, User
 from schemas import NoteCreate
 from auth import create_access_token
 import models
+from passlib.context import CryptContext
 
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
 
 
 def get_db():
@@ -19,6 +23,31 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+# REGISTER user
+@app.post("/api/v1/register", status_code=201)
+def register_user(
+    user_data: dict,
+    db: Session = Depends(get_db)
+):
+    if "username" not in user_data or "password" not in user_data:
+        raise HTTPException(status_code=422, detail="Username and password required")
+        
+    existing_user = db.query(User).filter(User.username == user_data["username"]).first()
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Username already registered")
+        
+    hashed_password = pwd_context.hash(user_data["password"])
+    user = User(
+        username=user_data["username"],
+        hashed_password=hashed_password
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    
+    return {"id": user.id, "username": user.username}
 
 
 @app.get("/")
