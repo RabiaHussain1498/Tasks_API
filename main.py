@@ -9,6 +9,7 @@ import models
 from passlib.context import CryptContext
 
 
+
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
