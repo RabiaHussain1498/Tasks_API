@@ -6,7 +6,7 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "postgresql://postgres:Admin1234@db:5432/postgres"
+    "postgresql://postgres:Admin1234@postgres-db:5432/postgres"
 )
 
 

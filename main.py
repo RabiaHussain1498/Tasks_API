@@ -38,8 +38,13 @@ def register_user(
     existing_user = db.query(User).filter(User.username == user_data["username"]).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="Username already registered")
-        
-    hashed_password = pwd_context.hash(user_data["password"])
+
+
+    print("PASSWORD RECEIVED:", user_data["password"])
+    print("PASSWORD LENGTH:", len(user_data["password"]))
+
+    hashed_password = pwd_context.hash(user_data["password"])    
+   # hashed_password = pwd_context.hash(user_data["password"])
     user = User(
         username=user_data["username"],
         hashed_password=hashed_password
@@ -167,12 +172,35 @@ def delete_note(
 
 
 @app.post("/login")
-def login():
+def login(
+    username: str,
+    password: str,
+    db: Session = Depends(get_db)
+):
+
+    user = db.query(User).filter(
+        User.username == username
+    ).first()
+
+    if user is None:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid username or password"
+        )
+
+    if not pwd_context.verify(
+        password,
+        user.hashed_password
+    ):
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid username or password"
+        )
 
     token = create_access_token(
         {
-            "user_id": 1,
-            "role": "user"
+            "user_id": user.id,
+            "username": user.username
         }
     )
 
