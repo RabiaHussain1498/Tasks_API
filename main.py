@@ -2,11 +2,10 @@ from fastapi import FastAPI, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
-
 from database import Base, engine
 from dependencies import get_db, get_current_user
-from models import Note, User
-from schemas import NoteCreate, UserCreate
+from models import Note, User, Category
+from schemas import NoteCreate, UserCreate, CategoryCreate
 from auth import create_access_token
 
 
@@ -16,6 +15,26 @@ app = FastAPI()
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+
+@app.post("/api/v1/categories", status_code=201)
+def create_category(
+    category: CategoryCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    new_category = Category(name=category.name)
+    db.add(new_category)
+    db.commit()
+    db.refresh(new_category)
+    return new_category
+
+
+@app.get("/api/v1/categories")
+def get_categories(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    return db.query(Category).all()
 
 @app.get("/")
 def home():

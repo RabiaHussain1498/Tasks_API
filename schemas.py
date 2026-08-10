@@ -11,3 +11,7 @@ class NoteCreate(BaseModel):
 class UserCreate(BaseModel):
     username: str
     password: str
+
+
+class CategoryCreate(BaseModel):
+    name: str
