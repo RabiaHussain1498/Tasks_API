@@ -51,7 +51,7 @@ def home():
 
 
 # REGISTER user
-@app.post("/api/v1/register", status_code=201)
+@app.post("/api/v1/auth/register", status_code=201)
 def register_user(
     user_data: UserCreate,
     db: Session = Depends(get_db)
@@ -73,7 +73,7 @@ def register_user(
 
 
 # LOGIN
-@app.post("/login")
+@app.post("/api/v1/auth/login")
 def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)

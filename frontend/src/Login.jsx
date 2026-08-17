@@ -1,21 +1,25 @@
 import { useState } from 'react';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_URL = import.meta.env.VITE_API_URL;
 
-function Login({ setToken }) {
+function Login({ setToken, setCurrentView }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
+      setLoading(true);
+      setError('');
+      
       const formData = new URLSearchParams();
       formData.append('username', username);
       formData.append('password', password);
 
-      const response = await fetch(`${API_URL}/login`, {
+      const response = await fetch(`${API_URL}/api/v1/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: formData
@@ -29,6 +33,8 @@ function Login({ setToken }) {
       setToken(data.access_token);
     } catch (err) {
       setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -65,7 +71,20 @@ function Login({ setToken }) {
             </button>
           </div>
         </div>
-        <button type="submit" className="btn-primary">Login</button>
+        <button type="submit" className="btn-primary" disabled={loading}>
+          {loading ? 'Logging in...' : 'Login'}
+        </button>
+
+        <p className="auth-toggle">
+          Don't have an account? 
+          <button 
+            type="button" 
+            className="link-btn" 
+            onClick={() => setCurrentView('register')}
+          >
+            Sign up here
+          </button>
+        </p>
       </form>
     </div>
   );
