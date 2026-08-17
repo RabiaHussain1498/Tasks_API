@@ -40,6 +40,12 @@ Frontend URL:
 http://localhost:5173
 ```
 
+If port 5173 is already in use, Vite will automatically choose the next available port, for example:
+
+```text
+http://localhost:5174
+```
+
 Make sure the frontend env file contains:
 
 ```env
