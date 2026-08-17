@@ -1,12 +1,14 @@
 import os
+from dotenv import load_dotenv
+load_dotenv()
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 
-DATABASE_URL = os.getenv(
-    "DATABASE_URL",
-    "postgresql://postgres:Admin1234@postgres-db:5432/postgres"
-)
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if not DATABASE_URL:
+    raise ValueError("DATABASE_URL is not set in the environment variables.")
 
 
 engine = create_engine(
