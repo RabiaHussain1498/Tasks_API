@@ -166,8 +166,10 @@ Category (1) ----< (Many) Note
 
 ## Database Migrations
 
-Managed by Alembic. Current migration:
-- `alembic/versions/774472689fb2_create_task_and_category_tables.py`
+Managed by Alembic. The active schema migration is:
+- `alembic/versions/2ac8f3d2e1b9_update_schema_to_match_models_create_users_and_notes_tables.py`
+
+This migration creates the current app schema for `categories`, `users`, and `notes`, and also removes stale legacy tables from earlier app versions.
 
 To create new migrations:
 ```bash
